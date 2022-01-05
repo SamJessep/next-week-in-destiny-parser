@@ -54,49 +54,88 @@ var MakeMap = function (name) { return __awaiter(void 0, void 0, void 0, functio
         return [2 /*return*/, (0, Search_1.CreateMapJSON)(name)];
     });
 }); };
-var fs = require("fs");
-// READ CSV INTO STRING
-var data = fs.readFileSync("weeklydata.csv").toLocaleString();
-// STRING TO ARRAY
-var weekJSON = [];
-var weeks = data.split("\n").filter(function (_, index) { return index != 0; }); // SPLIT ROWS
-weeks.forEach(function (week) {
-    var items = week.split(",").map(function (i) { return i.trim(); }); //SPLIT COLUMNS
-    if (items.length > 2) {
-        Object.keys(items).forEach(function (key) {
-            if (key.includes("GUN"))
-                items[key] = MakeGun(items[key]);
-            if (key.includes("MAP"))
-                items[key] = MakeMap(items[key]);
-        });
-        var DATE = items[0], GM_MAP = items[1], GM_GUN_1 = items[2], GM_GUN_2 = items[3], RAID_GUN = items[4], TRIALS_GUN = items[5], TRIALS_MAP = items[6];
-        weekJSON.push({
-            date: DATE,
-            vendors: {
-                trials: {
-                    name: "Trials of osiris",
-                    items: [
-                        TRIALS_GUN
-                    ],
-                    map: TRIALS_MAP
-                },
-                raid: {
-                    name: "Vault of glass",
-                    challengeIndex: raidChallengeMap[RAID_GUN.name],
-                    items: [
-                        RAID_GUN
-                    ]
-                },
-                gm: {
-                    name: "Grandmaster Nightfall",
-                    items: [
-                        GM_GUN_1,
-                        GM_GUN_2
-                    ],
-                    map: GM_MAP
-                }
-            }
-        });
-    }
-});
-fs.writeFileSync(".weeklyItems.json", JSON.stringify(weekJSON));
+var run = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var fs, data, weekJSON, weeks, keyRow, _i, weeks_1, week, items, _a, _b, index, key, _c, _d, _e, _f, DATE, GM_MAP, GM_GUN_1, GM_GUN_2, RAID_GUN, TRIALS_GUN, TRIALS_MAP;
+    return __generator(this, function (_g) {
+        switch (_g.label) {
+            case 0:
+                fs = require("fs");
+                data = fs.readFileSync("weeklydata.csv").toLocaleString();
+                weekJSON = [];
+                weeks = data.split("\n").filter(function (_, index) { return index != 0; });
+                keyRow = data.split("\n")[0].split(",");
+                _i = 0, weeks_1 = weeks;
+                _g.label = 1;
+            case 1:
+                if (!(_i < weeks_1.length)) return [3 /*break*/, 11];
+                week = weeks_1[_i];
+                items = week.split(",").map(function (i) { return i.trim(); });
+                if (!(items.length > 2)) return [3 /*break*/, 10];
+                _a = 0, _b = Object.keys(items);
+                _g.label = 2;
+            case 2:
+                if (!(_a < _b.length)) return [3 /*break*/, 9];
+                index = _b[_a];
+                key = keyRow[index].toUpperCase();
+                if (!key.includes("GUN")) return [3 /*break*/, 4];
+                _c = items;
+                _d = index;
+                return [4 /*yield*/, MakeGun(items[index])];
+            case 3:
+                _c[_d] = _g.sent();
+                _g.label = 4;
+            case 4:
+                if (!(key.includes("MAP") && items[index] != "N/A" && items[index] != "?")) return [3 /*break*/, 6];
+                _e = items;
+                _f = index;
+                return [4 /*yield*/, MakeMap(items[index])];
+            case 5:
+                _e[_f] = _g.sent();
+                _g.label = 6;
+            case 6: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 500); })];
+            case 7:
+                _g.sent();
+                _g.label = 8;
+            case 8:
+                _a++;
+                return [3 /*break*/, 2];
+            case 9:
+                DATE = items[0], GM_MAP = items[1], GM_GUN_1 = items[2], GM_GUN_2 = items[3], RAID_GUN = items[4], TRIALS_GUN = items[5], TRIALS_MAP = items[6];
+                weekJSON.push({
+                    date: DATE,
+                    vendors: {
+                        trials: {
+                            name: "Trials of osiris",
+                            items: [
+                                TRIALS_GUN
+                            ],
+                            map: TRIALS_MAP
+                        },
+                        raid: {
+                            name: "Vault of glass",
+                            challengeIndex: raidChallengeMap[RAID_GUN.name],
+                            items: [
+                                RAID_GUN
+                            ]
+                        },
+                        gm: {
+                            name: "Grandmaster Nightfall",
+                            items: [
+                                GM_GUN_1,
+                                GM_GUN_2
+                            ],
+                            map: GM_MAP
+                        }
+                    }
+                });
+                _g.label = 10;
+            case 10:
+                _i++;
+                return [3 /*break*/, 1];
+            case 11:
+                fs.writeFileSync(".weeklyItems.json", JSON.stringify(weekJSON));
+                return [2 /*return*/];
+        }
+    });
+}); };
+run();
