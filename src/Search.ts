@@ -16,10 +16,8 @@ const AUTH_HEADERS = {"X-API-Key":"194905872e5246a6b74852cb158a9fb7"}
 
 
 export const Search =  async (term:string, defType:string) : Promise<WeaponSearch|MapSearch> =>{
-console.log(SEARCH_URL+defType+`/${term.replace(/[^a-zA-Z ]/g, "")}`)
-
-
-  const res = await axios.get(SEARCH_URL+defType+`/${term.replace(/[^a-zA-Z ]/g, "")}`,{headers:AUTH_HEADERS})
+  const url = new URL(SEARCH_URL+defType+`/${term.replace(/[^a-zA-Z ']/g, "")}`).href
+  const res = await axios.get(url,{headers:AUTH_HEADERS})
   return res.data.Response
 }
 

@@ -44,12 +44,12 @@ exports.MAP_DEF = 'DestinyActivityDefinition';
 exports.WEAPON_DEF = 'DestinyInventoryItemDefinition';
 var AUTH_HEADERS = { "X-API-Key": "194905872e5246a6b74852cb158a9fb7" };
 var Search = function (term, defType) { return __awaiter(void 0, void 0, void 0, function () {
-    var res;
+    var url, res;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log(SEARCH_URL + defType + "/".concat(term.replace(/[^a-zA-Z ]/g, "")));
-                return [4 /*yield*/, axios.get(SEARCH_URL + defType + "/".concat(term.replace(/[^a-zA-Z ]/g, "")), { headers: AUTH_HEADERS })];
+                url = new URL(SEARCH_URL + defType + "/".concat(term.replace(/[^a-zA-Z ']/g, ""))).href;
+                return [4 /*yield*/, axios.get(url, { headers: AUTH_HEADERS })];
             case 1:
                 res = _a.sent();
                 return [2 /*return*/, res.data.Response];

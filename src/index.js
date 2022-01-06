@@ -55,7 +55,7 @@ var MakeMap = function (name) { return __awaiter(void 0, void 0, void 0, functio
     });
 }); };
 var run = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var fs, data, weekJSON, weeks, keyRow, _i, weeks_1, week, items, _a, _b, index, key, _c, _d, _e, _f, DATE, GM_MAP, GM_GUN_1, GM_GUN_2, RAID_GUN, TRIALS_GUN, TRIALS_MAP;
+    var fs, data, weekJSON, weeks, keyRow, cellsProcessed, totalCells, _i, weeks_1, week, items, _a, _b, index, key, _c, _d, _e, _f, DATE, GM_MAP, GM_GUN_1, GM_GUN_2, RAID_GUN, TRIALS_GUN, TRIALS_MAP;
     return __generator(this, function (_g) {
         switch (_g.label) {
             case 0:
@@ -64,12 +64,14 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
                 weekJSON = [];
                 weeks = data.split("\n").filter(function (_, index) { return index != 0; });
                 keyRow = data.split("\n")[0].split(",");
+                cellsProcessed = 0;
                 _i = 0, weeks_1 = weeks;
                 _g.label = 1;
             case 1:
                 if (!(_i < weeks_1.length)) return [3 /*break*/, 11];
                 week = weeks_1[_i];
                 items = week.split(",").map(function (i) { return i.trim(); });
+                totalCells = items.length * (weeks.length - 1);
                 if (!(items.length > 2)) return [3 /*break*/, 10];
                 _a = 0, _b = Object.keys(items);
                 _g.label = 2;
@@ -77,6 +79,10 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
                 if (!(_a < _b.length)) return [3 /*break*/, 9];
                 index = _b[_a];
                 key = keyRow[index].toUpperCase();
+                cellsProcessed++;
+                printProgress(cellsProcessed / totalCells);
+                if (["N/A", "?", "IB"].includes(items[index]))
+                    return [3 /*break*/, 8];
                 if (!key.includes("GUN")) return [3 /*break*/, 4];
                 _c = items;
                 _d = index;
@@ -85,14 +91,14 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
                 _c[_d] = _g.sent();
                 _g.label = 4;
             case 4:
-                if (!(key.includes("MAP") && items[index] != "N/A" && items[index] != "?")) return [3 /*break*/, 6];
+                if (!key.includes("MAP")) return [3 /*break*/, 6];
                 _e = items;
                 _f = index;
                 return [4 /*yield*/, MakeMap(items[index])];
             case 5:
                 _e[_f] = _g.sent();
                 _g.label = 6;
-            case 6: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 500); })];
+            case 6: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 50); })];
             case 7:
                 _g.sent();
                 _g.label = 8;
@@ -133,9 +139,14 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
                 _i++;
                 return [3 /*break*/, 1];
             case 11:
-                fs.writeFileSync(".weeklyItems.json", JSON.stringify(weekJSON));
+                fs.writeFileSync("weeklyItems.json", JSON.stringify(weekJSON));
                 return [2 /*return*/];
         }
     });
 }); };
+function printProgress(progress) {
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
+    process.stdout.write(Math.floor(progress * 100) + '%');
+}
 run();

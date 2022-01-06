@@ -26,15 +26,22 @@ const run = async()=>{
   var weekJSON:any = []
   var weeks = data.split("\n").filter((_:any,index:number)=>index!=0); // SPLIT ROWS
   const keyRow=data.split("\n")[0].split(",")
+  
+  var cellsProcessed = 0;
+  var totalCells
   for(let week of weeks) {
-      const items:any = week.split(",").map(i=>i.trim()); //SPLIT COLUMNS
+      const items:any = week.split(",").map((i:string)=>i.trim()); //SPLIT COLUMNS
+      totalCells = items.length*(weeks.length-1)
       if(items.length>2){
         for(let index of Object.keys(items)){
           const key = keyRow[index].toUpperCase()
+          cellsProcessed++;
+          printProgress(cellsProcessed/totalCells)
+          if(["N/A","?","IB"].includes(items[index])) continue
           if(key.includes("GUN")) items[index] = await MakeGun(items[index])
-          if(key.includes("MAP") && items[index] != "N/A" && items[index] != "?") items[index] = await MakeMap(items[index])
+          if(key.includes("MAP")) items[index] = await MakeMap(items[index])
   
-          await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise(resolve => setTimeout(resolve, 50));
     
         }
         const [DATE, GM_MAP, GM_GUN_1, GM_GUN_2, RAID_GUN, TRIALS_GUN, TRIALS_MAP] = items
@@ -73,7 +80,12 @@ const run = async()=>{
       }
   }
   
-  fs.writeFileSync(".weeklyItems.json", JSON.stringify(weekJSON))
+  fs.writeFileSync("weeklyItems.json", JSON.stringify(weekJSON))
+}
+function printProgress(progress:number){
+  process.stdout.clearLine(0);
+  process.stdout.cursorTo(0);
+  process.stdout.write(Math.floor(progress*100) + '%');
 }
 
 run()
