@@ -80,6 +80,8 @@ export const run = async (exportPath:string, fileName:string="appData.json") => 
   //Get latest manifest data
   await Setup();
   var fs = require("fs");
+
+  const outPath = path.join(exportPath,fileName)
   // READ CSV INTO STRING
   var data = fs.readFileSync(path.resolve(__dirname,"../weeklydata.csv")).toLocaleString();
 
@@ -104,7 +106,9 @@ export const run = async (exportPath:string, fileName:string="appData.json") => 
     weeks: weekJSON.filter((w: any) => w != null),
     ironBannerItems: ironBannerItems,
   };
-  fs.writeFileSync(path.join(exportPath,fileName), JSON.stringify(fileJSON));
+  console.log("JSON formed")
+  console.log("writing json to: ",outPath)
+  fs.writeFileSync(outPath, JSON.stringify(fileJSON));
 
   //Clean up
   await closeDB(db);
