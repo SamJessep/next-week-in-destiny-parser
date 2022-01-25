@@ -84,7 +84,7 @@ export const run = async (exportPath:string, fileName:string="appData.json") => 
   const outPath = path.join(exportPath,fileName)
   // READ CSV INTO STRING
   var data = fs.readFileSync(path.resolve(__dirname,"../weeklydata.csv")).toLocaleString();
-
+  console.log("read weekly data file")
   //Open DB
   const db = await openDB();
 
