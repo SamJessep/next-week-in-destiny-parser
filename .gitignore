@@ -2,3 +2,7 @@
 /generatejson.js
 /node_modules
 /package-lock.json
+weeklyItems.json
+/src/data/*
+/src/**/**.js
+.env

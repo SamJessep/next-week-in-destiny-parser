@@ -1,6 +1,6 @@
 export interface WeaponDetails {
   displayProperties: DisplayProperties;
-  tooltipNotifications?: (null)[] | null;
+  tooltipNotifications?: null[] | null;
   collectibleHash: number;
   iconWatermark: string;
   iconWatermarkShelved: string;
@@ -22,27 +22,27 @@ export interface WeaponDetails {
   acquireUnlockHash: number;
   sockets: Sockets;
   talentGrid: TalentGrid;
-  investmentStats?: (InvestmentStatsEntity)[] | null;
-  perks?: (null)[] | null;
+  investmentStats?: InvestmentStatsEntity[] | null;
+  perks?: null[] | null;
   loreHash: number;
   summaryItemHash: number;
   allowActions: boolean;
   doesPostmasterPullHaveSideEffects: boolean;
   nonTransferrable: boolean;
-  itemCategoryHashes?: (number)[] | null;
+  itemCategoryHashes?: number[] | null;
   specialItemType: number;
   itemType: number;
   itemSubType: number;
   classType: number;
   breakerType: number;
   equippable: boolean;
-  damageTypeHashes?: (number)[] | null;
-  damageTypes?: (number)[] | null;
+  damageTypeHashes?: number[] | null;
+  damageTypes?: number[] | null;
   defaultDamageType: number;
   defaultDamageTypeHash: number;
   isWrapper: boolean;
-  traitIds?: (string)[] | null;
-  traitHashes?: (number)[] | null;
+  traitIds?: string[] | null;
+  traitHashes?: number[] | null;
   hash: number;
   index: number;
   redacted: boolean;
@@ -65,8 +65,8 @@ export interface Action {
   verbDescription: string;
   isPositive: boolean;
   requiredCooldownSeconds: number;
-  requiredItems?: (null)[] | null;
-  progressionRewards?: (null)[] | null;
+  requiredItems?: null[] | null;
+  progressionRewards?: null[] | null;
   actionTypeLabel: string;
   rewardSheetHash: number;
   rewardItemHash: number;
@@ -104,14 +104,14 @@ export interface EquippingBlock {
   equippingSoundHash: number;
   hornSoundHash: number;
   ammoType: number;
-  displayStrings?: (string)[] | null;
+  displayStrings?: string[] | null;
 }
 export interface TranslationBlock {
   weaponPatternHash: number;
-  defaultDyes?: (DefaultDyesEntity)[] | null;
-  lockedDyes?: (null)[] | null;
-  customDyes?: (null)[] | null;
-  arrangements?: (ArrangementsEntity)[] | null;
+  defaultDyes?: DefaultDyesEntity[] | null;
+  lockedDyes?: null[] | null;
+  customDyes?: null[] | null;
+  arrangements?: ArrangementsEntity[] | null;
   hasGeometry: boolean;
 }
 export interface DefaultDyesEntity {
@@ -128,24 +128,24 @@ export interface Preview {
   previewActionString: string;
 }
 export interface Quality {
-  itemLevels?: (null)[] | null;
+  itemLevels?: null[] | null;
   qualityLevel: number;
   infusionCategoryName: string;
   infusionCategoryHash: number;
-  infusionCategoryHashes?: (number)[] | null;
+  infusionCategoryHashes?: number[] | null;
   progressionLevelRequirementHash: number;
   currentVersion: number;
-  versions?: (VersionsEntity)[] | null;
-  displayVersionWatermarkIcons?: (string)[] | null;
+  versions?: VersionsEntity[] | null;
+  displayVersionWatermarkIcons?: string[] | null;
 }
 export interface VersionsEntity {
   powerCapHash: number;
 }
 export interface Sockets {
   detail: string;
-  socketEntries?: (SocketEntriesEntity)[] | null;
-  intrinsicSockets?: (IntrinsicSocketsEntity)[] | null;
-  socketCategories?: (SocketCategoriesEntity)[] | null;
+  socketEntries?: SocketEntriesEntity[] | null;
+  intrinsicSockets?: IntrinsicSocketsEntity[] | null;
+  socketCategories?: SocketCategoriesEntity[] | null;
 }
 export interface SocketEntriesEntity {
   socketTypeHash: number;
@@ -170,7 +170,7 @@ export interface IntrinsicSocketsEntity {
 }
 export interface SocketCategoriesEntity {
   socketCategoryHash: number;
-  socketIndexes?: (number)[] | null;
+  socketIndexes?: number[] | null;
 }
 export interface TalentGrid {
   talentGridHash: number;

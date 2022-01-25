@@ -36,19 +36,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.CreateMapJSON = exports.CreateWeaponJSON = exports.Details = exports.Search = exports.WEAPON_DEF = exports.MAP_DEF = void 0;
-var axios = require('axios')["default"];
-var SEARCH_URL = 'https://www.bungie.net/Platform/Destiny2/Armory/Search/';
-var DETAIL_URL = 'https://www.bungie.net/Platform/Destiny2/Manifest//';
-exports.MAP_DEF = 'DestinyActivityDefinition';
-exports.WEAPON_DEF = 'DestinyInventoryItemDefinition';
-var AUTH_HEADERS = { "X-API-Key": "194905872e5246a6b74852cb158a9fb7" };
+exports.CreateMapJSON = exports.CreateWeaponJSON = exports.Details = exports.SearchManifest = exports.Search = exports.WEAPON_DEF = exports.MAP_DEF = void 0;
+var Querry_1 = require("./Querry");
+var DB_1 = require("./DB");
+var axios = require("axios")["default"];
+require("dotenv").config();
+var SEARCH_URL = "https://www.bungie.net/Platform/Destiny2/Armory/Search/";
+var DETAIL_URL = "https://www.bungie.net/Platform/Destiny2/Manifest//";
+exports.MAP_DEF = "DestinyActivityDefinition";
+exports.WEAPON_DEF = "DestinyInventoryItemDefinition";
+var AUTH_HEADERS = { "X-API-Key": process.env.BUNGIE_API_KEY };
 var Search = function (term, defType) { return __awaiter(void 0, void 0, void 0, function () {
     var url, res;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                url = new URL(SEARCH_URL + defType + "/".concat(term.replace(/[^a-zA-Z ']/g, ""))).href;
+                url = new URL(SEARCH_URL + defType + "/".concat(term.replace(/[^a-zA-Z \-']/g, ""))).href;
                 return [4 /*yield*/, axios.get(url, { headers: AUTH_HEADERS })];
             case 1:
                 res = _a.sent();
@@ -57,25 +60,33 @@ var Search = function (term, defType) { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.Search = Search;
-var Details = function (hash, defType) { return __awaiter(void 0, void 0, void 0, function () {
-    var res;
+var SearchManifest = function (db, term, defType) { return __awaiter(void 0, void 0, void 0, function () {
+    var query;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, axios.get(DETAIL_URL + defType + "/".concat(hash), { headers: AUTH_HEADERS })];
-            case 1:
-                res = _a.sent();
-                return [2 /*return*/, res.data.Response];
+            case 0:
+                query = "select json_extract(json, \"$.displayProperties.name\") as item_name, json from ".concat(defType, " where item_name like \"").concat(term, "\"");
+                return [4 /*yield*/, (0, DB_1.queryDB)(db, query)];
+            case 1: return [2 /*return*/, (_a.sent()).map(function (row) {
+                    return JSON.parse(row.json);
+                })];
         }
     });
 }); };
+exports.SearchManifest = SearchManifest;
+var Details = function (hash, defType) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/, (0, Querry_1.getItemByHash)(__dirname + "/data/" + defType + ".json", hash.toString())];
+    });
+}); };
 exports.Details = Details;
-var CreateWeaponJSON = function (name) { return __awaiter(void 0, void 0, void 0, function () {
+var CreateWeaponJSON = function (db, name) { return __awaiter(void 0, void 0, void 0, function () {
     var searchResults, weaponData;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, exports.Search)(name, exports.WEAPON_DEF)];
+            case 0: return [4 /*yield*/, (0, exports.SearchManifest)(db, name, exports.WEAPON_DEF)];
             case 1:
-                searchResults = (_a.sent()).results.results;
+                searchResults = (_a.sent()).sort(function (a, b) { return (a.index > b.index ? -1 : 1); });
                 if (!(searchResults != null)) return [3 /*break*/, 3];
                 return [4 /*yield*/, (0, exports.Details)(searchResults[0].hash, exports.WEAPON_DEF)];
             case 2:
@@ -83,26 +94,32 @@ var CreateWeaponJSON = function (name) { return __awaiter(void 0, void 0, void 0
                 return [2 /*return*/, {
                         name: weaponData.displayProperties.name,
                         icon: weaponData.displayProperties.icon,
+                        screenshot: weaponData.screenshot,
                         overlay_icon: weaponData.iconWatermark,
-                        description: weaponData.displayProperties.description
+                        description: weaponData.displayProperties.description,
+                        perks: (0, Querry_1.getAllPerks)(weaponData.hash.toString())
                     }];
-            case 3: return [2 /*return*/, {
-                    name: "",
-                    icon: "",
-                    overlay_icon: "",
-                    description: ""
-                }];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.CreateWeaponJSON = CreateWeaponJSON;
-var CreateMapJSON = function (name) { return __awaiter(void 0, void 0, void 0, function () {
+var CreateMapJSON = function (db, name) { return __awaiter(void 0, void 0, void 0, function () {
     var searchResults, mapData;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, exports.Search)(name, exports.MAP_DEF)];
+            case 0:
+                if (name.toUpperCase() === "IB") {
+                    return [2 /*return*/, {
+                            name: "Iron Banner",
+                            icon: "/common/destiny2_content/icons/0ee91b79ba1366243832cf810afc3b75.jpg",
+                            description: '"Bring the full force of your Light. Nothing less will do." —Lord Saladin \n\nAll-out team warfare. Destroy the enemy.',
+                            backdrop: "/img/destiny_content/pgcr/conceptual_iron_banner.jpg"
+                        }];
+                }
+                return [4 /*yield*/, (0, exports.SearchManifest)(db, name, exports.MAP_DEF)];
             case 1:
-                searchResults = (_a.sent()).results.results;
+                searchResults = (_a.sent()).sort(function (a, b) { return (a.toString().length > b.toString().length ? -1 : 1); });
                 if (!(searchResults != null)) return [3 /*break*/, 3];
                 return [4 /*yield*/, (0, exports.Details)(searchResults[0].hash, exports.MAP_DEF)];
             case 2:
@@ -113,12 +130,7 @@ var CreateMapJSON = function (name) { return __awaiter(void 0, void 0, void 0, f
                         backdrop: mapData.pgcrImage,
                         description: mapData.displayProperties.description
                     }];
-            case 3: return [2 /*return*/, {
-                    name: "",
-                    icon: "",
-                    backdrop: "",
-                    description: ""
-                }];
+            case 3: return [2 /*return*/];
         }
     });
 }); };

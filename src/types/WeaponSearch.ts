@@ -1,9 +1,9 @@
 export interface WeaponSearch {
-  suggestedWords?: (string)[] | null;
+  suggestedWords?: string[] | null;
   results: Results;
 }
 export interface Results {
-  results?: (ResultsEntity)[] | null;
+  results?: ResultsEntity[] | null;
   totalResults: number;
   hasMore: boolean;
   query: Query;
