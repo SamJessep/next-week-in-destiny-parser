@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: Set env vars
-        run: BUNGIE_API_KEY=${{ secrets.GITHUB_TOKEN }}
+        run: echo BUNGIE_API_KEY=${{ secrets.GITHUB_TOKEN }} > .env
       
       - name: Get current date
         id: date
