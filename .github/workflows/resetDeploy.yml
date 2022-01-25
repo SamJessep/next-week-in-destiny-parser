@@ -32,7 +32,7 @@ jobs:
       - name: setup 
         run: |
             npm i 
-            mkidr src/data
+            mkdir -p src/data
         
       - name: generate JSON file 
         run: npm run generate
