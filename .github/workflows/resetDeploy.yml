@@ -30,7 +30,9 @@ jobs:
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       
       - name: setup 
-        run: npm i && mkidr src/data
+        run: |
+            npm i 
+            mkidr src/data
         
       - name: generate JSON file 
         run: npm run generate
