@@ -78,7 +78,7 @@ const MakeWeek = async (
 
 export const run = async (exportPath:string, fileName:string="appData.json") => {
   //Get latest manifest data
-  await Setup();
+  // await Setup();
   var fs = require("fs");
 
   const outPath = path.join(exportPath,fileName)
@@ -92,6 +92,7 @@ export const run = async (exportPath:string, fileName:string="appData.json") => 
   var weekJSON: any = [];
   var weeks = data.split("\n").filter((_: any, index: number) => index != 0); // SPLIT ROWS
   const keyRow = data.split("\n")[0].split(",");
+
   for (let week of weeks) {
     const json = await MakeWeek(db, week, keyRow, weeks);
     weekJSON.push(json);

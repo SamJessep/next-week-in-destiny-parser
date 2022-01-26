@@ -4,6 +4,13 @@ const path = require("path");
 export const PLUG_DEFS = __dirname+"/data/DestinyPlugSetDefinition.json";
 export const ITEM_DEFS = __dirname+"/data/DestinyInventoryItemDefinition.json";
 export const SOCKET_DEFS = __dirname+"/data/DestinySocketTypeDefinition.json";
+export const STAT_DEFS = __dirname+"/data/DestinyStatDefinition.json";
+export const STAT_GROUP_DEFS = __dirname+"/data/DestinyStatGroupDefinition.json";
+
+const parseDefs = (defPath:string)=>{
+  var data = fs.readFileSync(defPath);
+  return JSON.parse(data);
+}
 
 export const getItemByHash = (manifestType: string, hash: string) => {
   var data = fs.readFileSync(manifestType, { encoding: "utf8" });
@@ -21,9 +28,11 @@ const getPlugPerks = (json: string, plugHash: string) => {
   const plugs = getPlugs(plugHash);
   let plugNames:string[] = []
   return plugs.map((plug: any) => {
+    const perk = getPerk(json, plug.plugItemHash)
     return {
       obtainable:plug.currentlyCanRoll,
-      ...getPerk(json, plug.plugItemHash)?.displayProperties
+      ...perk?.displayProperties,
+      perkBonuses:getPerkStatBonuses(perk)
     }
   }).filter((plug:{name:string})=>{
     if(plugNames.includes(plug.name)){
@@ -37,6 +46,17 @@ const getPlugPerks = (json: string, plugHash: string) => {
 const getPerk = (json: any, perkHash: string) => {
   return json[perkHash];
 };
+
+const getPerkStatBonuses = (perk:any)=>{
+  let bonuses:any = {}
+  let statDefs = parseDefs(STAT_DEFS)
+  perk.investmentStats.forEach((bonus:{statTypeHash:number, value:number, isConditionallyActive:boolean})=>{
+    const stat = statDefs[bonus.statTypeHash]
+    if(!stat) return
+    bonuses[stat.displayProperties.name] = {value:bonus.value,isConditionallyActive:bonus.isConditionallyActive}
+  })
+  return bonuses
+}
 
 const getSocketName = (json:any, singleInitialItemHash: string) => {
   if(json[singleInitialItemHash] === undefined) return ""
@@ -53,8 +73,7 @@ const isShitSocket = (socket: any, index: number) => {
 };
 
 export const getAllPerks = (weaponHash: string) => {
-  var data = fs.readFileSync(ITEM_DEFS);
-  const json = JSON.parse(data);
+  const json = parseDefs(ITEM_DEFS)
   const weapon = getItemByHash(ITEM_DEFS, weaponHash);
   const sockets = weapon.sockets.socketEntries;
   const cleanedSockets: any = [];
@@ -70,3 +89,42 @@ export const getAllPerks = (weaponHash: string) => {
 
   return cleanedSockets;
 };
+
+
+export const getAllStats = (weaponHash: string)=>{
+  const statsJSON = parseDefs(STAT_DEFS);
+  const weapon = getItemByHash(ITEM_DEFS, weaponHash);
+
+  const statGroup = parseDefs(STAT_GROUP_DEFS)[weapon.stats.statGroupHash]
+  let stats:any = {}
+  statGroup.scaledStats.forEach((stat:any)=>{
+    try{
+      const {value,displayMaximum} = weapon.stats.stats[stat.statHash]
+      const {description, name} = statsJSON[stat.statHash].displayProperties
+      let displayMap:any = {}
+      for(let {value:displayValue, weight} of stat.displayInterpolation){
+        displayMap[displayValue]=weight
+      }
+      if(!stat.displayAsNumeric) displayMap = undefined
+  
+      stats[name] = {
+        name,description,value,max:displayMaximum,displayMap,
+      }
+    }catch(e){console.error(e)}
+  })
+
+  for(let statKey in weapon.stats.stats){
+    if(statKey in stats) continue
+
+    const {value,displayMaximum} = weapon.stats.stats[statKey]
+    const {description, name} = statsJSON[statKey].displayProperties
+    if(name == "")continue
+    stats[name] = {
+      name,
+      description,
+      value,
+      max:displayMaximum
+    }
+  }
+  return stats
+}

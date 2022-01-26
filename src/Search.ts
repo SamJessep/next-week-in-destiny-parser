@@ -4,7 +4,7 @@ import { MapSearch } from "./types/MapSearch";
 import { WeaponDetails } from "./types/WeaponDetails";
 import WeaponJSON from "./types/WeaponJSON";
 import { WeaponSearch } from "./types/WeaponSearch";
-import { getAllPerks, getItemByHash } from "./Querry";
+import { getAllPerks,getAllStats, getItemByHash } from "./Querry";
 import { queryDB } from "./DB";
 const axios = require("axios").default;
 require("dotenv").config();
@@ -60,6 +60,7 @@ export const CreateWeaponJSON = async (
       overlay_icon: weaponData.iconWatermark,
       description: weaponData.displayProperties.description,
       perks: getAllPerks(weaponData.hash.toString()),
+      stats: getAllStats(weaponData.hash.toString())
     };
   }
 };
