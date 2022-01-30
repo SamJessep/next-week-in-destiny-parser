@@ -97,7 +97,8 @@ var CreateWeaponJSON = function (db, name) { return __awaiter(void 0, void 0, vo
                         screenshot: weaponData.screenshot,
                         overlay_icon: weaponData.iconWatermark,
                         description: weaponData.displayProperties.description,
-                        perks: (0, Querry_1.getAllPerks)(weaponData.hash.toString())
+                        perks: (0, Querry_1.getAllPerks)(weaponData.hash.toString()),
+                        stats: (0, Querry_1.getAllStats)(weaponData.hash.toString())
                     }];
             case 3: return [2 /*return*/];
         }

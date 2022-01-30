@@ -78,7 +78,7 @@ const MakeWeek = async (
 
 export const run = async (exportPath:string, fileName:string="appData.json") => {
   //Get latest manifest data
-  // await Setup();
+  await Setup();
   var fs = require("fs");
 
   const outPath = path.join(exportPath,fileName)
