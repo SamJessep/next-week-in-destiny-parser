@@ -99,16 +99,16 @@ export const getAllStats = (weaponHash: string)=>{
   let stats:any = {}
   statGroup.scaledStats.forEach((stat:any)=>{
     try{
-      const {value,displayMaximum} = weapon.stats.stats[stat.statHash]
+      const {value} = weapon.stats.stats[stat.statHash]
       const {description, name} = statsJSON[stat.statHash].displayProperties
-      let displayMap:any = {}
-      for(let {value:displayValue, weight} of stat.displayInterpolation){
-        displayMap[displayValue]=weight
-      }
-      if(!stat.displayAsNumeric) displayMap = undefined
-  
+      const {weight:min}= stat.displayInterpolation[0]
+      const {weight:max}= stat.displayInterpolation[stat.displayInterpolation.length-1]
       stats[name] = {
-        name,description,value,max:displayMaximum,displayMap,
+        name,
+        description,
+        value,
+        max,
+        min
       }
     }catch(e){console.error(e)}
   })
@@ -123,7 +123,8 @@ export const getAllStats = (weaponHash: string)=>{
       name,
       description,
       value,
-      max:displayMaximum
+      max:displayMaximum,
+      min:0
     }
   }
   return stats
